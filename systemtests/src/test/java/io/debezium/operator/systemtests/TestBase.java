@@ -29,7 +29,7 @@ import io.fabric8.kubernetes.client.LocalPortForward;
 import io.skodjob.testframe.annotations.ResourceManager;
 import io.skodjob.testframe.annotations.TestVisualSeparator;
 
-@ResourceManager
+@ResourceManager(asyncDeletion = false)
 @TestVisualSeparator
 @DebeziumResourceTypes
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

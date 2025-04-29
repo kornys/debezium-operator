@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.skodjob.dmt.schema.DatabaseColumnEntry;
 import io.skodjob.dmt.schema.DatabaseEntry;
+import io.skodjob.testframe.utils.TestFrameUtils;
 
 import okhttp3.Call;
 import okhttp3.HttpUrl;
@@ -73,16 +74,19 @@ public class DmtClient {
     }
 
     public static void resetRedis(String host, int port) {
-        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
-                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
-                .until(() -> {
-                    try (Response response = DmtClient.sendGetRequest(host, port, "/Redis/reset")) {
-                        return response.isSuccessful();
-                    }
-                    catch (Exception e) {
-                        return false;
-                    }
-                });
+        TestFrameUtils.runUntilPass(5, () -> {
+            await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
+                    .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
+                    .until(() -> {
+                        try (Response response = DmtClient.sendGetRequest(host, port, "/Redis/reset")) {
+                            return response.isSuccessful();
+                        }
+                        catch (Exception e) {
+                            return false;
+                        }
+                    });
+            return null;
+        });
     }
 
     public static void resetMysql(String host, int port) {
